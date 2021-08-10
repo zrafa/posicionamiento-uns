@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -16,6 +17,7 @@
  */
 # define ERs_FILE "ERs.txt"
 # define MAC_LEN	17	/* 17 letras tiene una MAC de ER */
+# define LINE_LEN	80	/* 17 letras tiene una MAC de ER */
 # define Nc	9	/* 30 ERs maximo en la matriz */
 typedef struct v_st {
 	int ID;
@@ -33,9 +35,9 @@ v_st vr[] = { {2,9}, {5,2}, {10,5}, {99,9}, {100,1}, {110,3}, {111,4}, {200,6}, 
 
 char ERs[Nc][MAC_LEN];
 
-void ERs_load(void)
+int ERs_load(void)
 {
-	int f, i;
+	int f, i, n;
 	char mac[MAC_LEN+1];
 
 	f = open(ERs_FILE, O_RDONLY);
@@ -52,7 +54,47 @@ void ERs_load(void)
 		mac[MAC_LEN] = '\0';
 		printf("%s\n", mac);
 	};
+
+	return n;
+}
+
+int GPS_ERs_load(void)
+{
+	int i, n;
+	char mac[LINE_LEN];
+	char l[LINE_LEN];
+	char *p;
+	FILE *f;
+	size_t n = LINE_LEN;
+
+	f = fopen(ERs_FILE, "r");
+	i = 0;
+	//while (read(f, mac, MAC_LEN+1)) {
+	while ((read = getline(l, %len, f)) != -1) {
+		if (strchr(l, ',') == NULL) {		/* si es una MAC */
+			memcpy(ERs[i], l, MAC_LEN);
+			p = strchr(l, ' ');
+			sprintf(
+		} else
+			memcpy(ERs[i], l, MAC_LEN);
+	 printf("Retrieved line of length %zu:\n", read);
+	 printf("%s", line);
+	}
+	while (getline(f, mac, MAC_LEN+1)) {
+		memcpy(ERs[i], mac, MAC_LEN);
+		// printf("%s\n", ERs[i]);
+		i++;
+	}
+	n = i;
+	fclose(f);
+
+	for (i=0; i<Nc; i++) {
+		memcpy(mac, ERs[i], MAC_LEN);
+		mac[MAC_LEN] = '\0';
+		printf("%s\n", mac);
+	};
 	
+	return n;
 }
 
 float pt_pr_calc(v_st *v) 
@@ -67,6 +109,9 @@ float pt_pr_calc(v_st *v)
 	return p;
 }
 
+/* 
+ * p_calc: calcula el Spearman Rank Correlation Coefficient (SRC)
+ */
 float p_calc(v_st *vt, v_st *vr)
 {
 	int i;
