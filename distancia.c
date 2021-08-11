@@ -69,6 +69,29 @@ int ERs_load(void)
 	return n;
 }
 
+int compare (const void * a, const void * b)
+{
+  fing_st *data_1 = (fing_st *)a;
+  fing_st *data_2 = (fing_st *)b;
+  return ( data_1->rss - data_2->rss );
+}
+
+
+void print_datos(void)
+{
+	int i,j;
+	char mac[LINE_LEN];
+	for (i=0; i<Nc; i++) {
+		printf("gps: %s\n", GPSs[i]);
+		for (j=0; j<Nc; j++) {
+			if (RFINGs[i][j].rss != 0) {
+				memcpy(mac, ERs[i], MAC_LEN);
+				mac[MAC_LEN] = '\0';
+				printf("\tmac: %s  -  rss: %i\n",RFINGs[i][j].mac, RFINGs[i][j].rss);
+			}
+		}
+	};
+}
 
 int GPSs_ERs_load(void)
 {
@@ -89,7 +112,7 @@ int GPSs_ERs_load(void)
 			p = strchr(l, ' ');
 			RFINGs[i][j].rss = atoi(p);
 			j++;
-		} else {
+		} else {				/* latitud y longitud */
 			i++;
 			strncpy(GPSs[i], l, LAT_LONG_LEN);
 		}
@@ -97,16 +120,6 @@ int GPSs_ERs_load(void)
 	n = i;
 	fclose(f);
 
-	for (i=0; i<Nc; i++) {
-		printf("gps: %s\n", GPSs[i]);
-		for (j=0; j<Nc; j++) {
-			if (RFINGs[i][j].rss != 0) {
-				memcpy(mac, ERs[i], MAC_LEN);
-				mac[MAC_LEN] = '\0';
-				printf("\tmac: %s  -  rss: %i\n",RFINGs[i][j].mac, RFINGs[i][j].rss);
-			}
-		}
-	};
 	
 	return n;
 }
@@ -160,8 +173,14 @@ float p_calc(v_st *vt, v_st *vr)
 
 void main(void)
 {
+	int i;
+
 	GPSs_ERs_load();
+	print_datos();
 	// ERs_load();
+	for (i=0; i<Nc; i++)
+		qsort (RFINGs[i], Nc, sizeof(fing_st), compare);
+	print_datos();
 	
 	float p = p_calc(vt, vr);
 	printf("c: %f\n", p);
