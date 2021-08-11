@@ -1,0 +1,4 @@
+
+
+- Todas las longitudes están harcodeadas (ejemplo: el largo de una cadena 
+  de lat,long). Si aparece una lat,long rara el programa explota probablemente :-).
