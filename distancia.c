@@ -108,7 +108,7 @@ void v_ordenar(fing_st *f, v_st *v)
 
 			/* si son iguales */
 			if (strncmp(f[i].mac, ERs[j], MAC_LEN) == 0) {
-				v[j].pos = i;	
+				v[j].pos = i+1;	
 				break;
 			}
 		}
