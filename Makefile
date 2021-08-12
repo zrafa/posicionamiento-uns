@@ -1,11 +1,7 @@
 CC = gcc
 APP = distancia
-#CFLAGS = -Os -DF_CPU=16000000UL -mmcu=atmega328p 
 CFLAGS = -g
-#LDFLAGS = -mmcu=atmega328p
 LDFLAGS = -lm
-#FIRMWARE = imagen.hex
-# OBJETOS = distancia.o serial.o
 OBJETOS = distancia.o
 
 # $@:Se sustituye por el nombre del objetivo de la presente regla.
