@@ -23,7 +23,7 @@
 # define Nc	9	/* 30 ERs maximo en la matriz */
 # define POS_N	40	/* maxima cantidad de puntos. Ej: 5 puntos por cuadra, 4 cuadras */
 typedef struct v_st {
-	int ID;
+	int id;
 	int pos;
 } v_st;
 
@@ -37,28 +37,102 @@ typedef struct fing_st {
 
 int tf_ex[5][2] = { {100, 62}, {110, 60}, {2, 54}, {5, 43}, {99, 40} };
 
-v_st vt[] = { {2,3}, {5,4}, {10,9}, {99,5}, {100,1}, {110,2}, {111,9}, {200,9}, {201,9}};
-v_st vr[] = { {2,9}, {5,2}, {10,5}, {99,9}, {100,1}, {110,3}, {111,4}, {200,6}, {201,7}};
+/* caso de Favio */
+//v_st vt[] = { {2,3}, {5,4}, {10,9}, {99,5}, {100,1}, {110,2}, {111,9}, {200,9}, {201,9}};
+//v_st vr[] = { {2,9}, {5,2}, {10,5}, {99,9}, {100,1}, {110,3}, {111,4}, {200,6}, {201,7}};
 
+/* caso identico */
+//v_st vt[] = { {0,3}, {1,4}, {2,9}, {3,5}, {4,1}, {5,2}, {6,9}, {7,9}, {8,9}};
+//v_st vr[] = { {0,9}, {1,2}, {2,5}, {3,9}, {4,1}, {5,3}, {6,4}, {7,6}, {8,7}};
+
+v_st vt[Nc];
+v_st vr[Nc];
 
 char ERs[Nc][MAC_LEN];
 fing_st RFINGs[POS_N][Nc]; /* hay que guardar la MAC (17 letras) y la potencia (un int) en cada RFING */
 char GPSs[Nc][LAT_LONG_LEN];
 
+void v_init(v_st *v)
+{
+	int i;
+
+	for (i=0; i<Nc; i++) {
+		v[i].id = i;
+		v[i].pos = Nc;
+	}
+}
+
+fing_st tfing[] = { 
+
+	{"38:6B:1C:27:7C:00", 62},
+	{"38:6B:1C:27:7C:06", 60},
+	{"38:6B:1C:27:7C:AA", 54},
+	{"38:6B:1C:27:7C:05", 43},
+	{"38:6B:1C:27:7C:AC", 40},
+	{"38:6B:1C:27:7C:AC", -1}
+	};
+
+/* fing st init */
+void f_init(fing_st *f)
+{
+	int i;
+
+	for (i=0; i<Nc; i++)
+		f[i].rss = -1;
+
+}
+
+/* BD (gps y er/rfing) st init */
+void bd_init(fing_st *f[])
+{
+	int i;
+
+	for (i=0; i<POS_N; i++)
+		f_init(RFINGs[i]);
+
+}
+
+
+/* paso de ordenacion: */ 
+void v_ordenar(fing_st *f, v_st *v)
+{
+	int i, j;
+
+	v_init(v);
+	for (i=0; i<Nc; i++) {
+		if (f[i].rss == -1)
+			break;
+
+		/* buscamos la ER en el listado gral. */
+		for (j=0; j<Nc; j++) {
+
+			/* si son iguales */
+			if (strncmp(f[i].mac, ERs[j], MAC_LEN) == 0) {
+				v[j].pos = i;	
+				break;
+			}
+		}
+	}
+
+}
+		
+
+
 int ERs_load(void)
 {
-	int f, i, n;
+	int i, n;
 	char mac[MAC_LEN+1];
+	char l[LINE_LEN];
+	FILE *f;
 
-	f = open(ERs_FILE, O_RDONLY);
+	f = fopen(ERs_FILE, "r");
 	i=0;
 	
-	while (read(f, mac, MAC_LEN+1)) {
-		memcpy(ERs[i], mac, MAC_LEN);
-		// printf("%s\n", ERs[i]);
+	while (fgets(l, sizeof(l), f)) {
+		memcpy(ERs[i], l, MAC_LEN);
 		i++;
 	}
-	close(f);
+	fclose(f);
 
 	for (i=0; i<Nc; i++) {
 		memcpy(mac, ERs[i], MAC_LEN);
@@ -73,7 +147,7 @@ int compare (const void * a, const void * b)
 {
   fing_st *data_1 = (fing_st *)a;
   fing_st *data_2 = (fing_st *)b;
-  return ( data_1->rss - data_2->rss );
+  return ( data_2->rss - data_1->rss );
 }
 
 
@@ -93,6 +167,14 @@ void print_datos(void)
 	};
 }
 
+
+
+
+
+
+
+
+
 int GPSs_ERs_load(void)
 {
 	int i, j, n;
@@ -102,7 +184,9 @@ int GPSs_ERs_load(void)
 	FILE *f;
 	ssize_t r;
 
-	/* falta inicializar las estructuras de datos en 0 */
+	/* falta inicializar las estructuras de datos en -1 */
+	for (i=0; i<Nc; i++)
+		f_init(RFINGs[i]);
 
 	f = fopen(GPSs_ERs_FILE, "r");
 	i=-1; j=0; n-0;
@@ -114,6 +198,7 @@ int GPSs_ERs_load(void)
 			j++;
 		} else {				/* latitud y longitud */
 			i++;
+			j=0;
 			strncpy(GPSs[i], l, LAT_LONG_LEN);
 		}
 	}
@@ -175,13 +260,25 @@ void main(void)
 {
 	int i;
 
+
 	GPSs_ERs_load();
 	print_datos();
-	// ERs_load();
+	ERs_load();
 	for (i=0; i<Nc; i++)
 		qsort (RFINGs[i], Nc, sizeof(fing_st), compare);
 	print_datos();
 	
+	v_ordenar(RFINGs[2], vr);
+	v_ordenar(tfing, vt);
+
+	for (i=0; i<Nc; i++) {
+		printf("vt %i id:%i pos:%i\n", i, vt[i].id, vt[i].pos); 
+	}
+
+	for (i=0; i<Nc; i++) {
+		printf("vr %i id:%i pos:%i\n", i, vr[i].id, vr[i].pos); 
+	}
+
 	float p = p_calc(vt, vr);
 	printf("c: %f\n", p);
 	printf("d=1-p = %f\n", (float)1-p);
