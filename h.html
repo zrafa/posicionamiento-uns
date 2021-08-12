@@ -1,0 +1,48 @@
+
+<html>
+	<head>
+		<title>Google Map</title>
+		<meta name="viewport" content="initial-scale=1.0">
+		<meta charset="utf-8">
+		<style>		  
+		  #map { 
+			height: 600px;	
+			width: 800px;			
+		  }		  
+		</style>		
+	</head>	
+	<body>		
+		<div style="padding:10px">
+			<div id="map"></div>
+		</div>
+		
+		<script type="text/javascript">
+		var map;
+		
+		function initMap() {							
+			
+			var latitude = -38.919914; // YOUR LATITUDE VALUE
+			var longitude = -68.0093624; // YOUR LONGITUDE VALUE
+
+			var myLatLng = {lat: latitude, lng: longitude};
+			
+			map = new google.maps.Map(document.getElementById('map'), {
+			  center: myLatLng,
+			  zoom: 18					
+			});
+					
+			var marker = new google.maps.Marker({
+			  position: myLatLng,
+			  map: map,
+			  //title: 'Hello World'
+			  
+			  // setting latitude & longitude as title of the marker
+			  // title is shown when you hover over the marker
+			  title: latitude + ', ' + longitude 
+			});			
+		}
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0w2dY7OZvF6nBvnLLxzAzXi05l_8jc-o&callback=initMap"
+		async defer></script>
+	</body>	
+</html>
