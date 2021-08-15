@@ -32,25 +32,26 @@ typedef struct fing_st {
 	int rss;
 } fing_st;
 
-// v_st Vt[Nc];
-// v_st Vr[Nc];
-
-int tf_ex[5][2] = { {100, 62}, {110, 60}, {2, 54}, {5, 43}, {99, 40} };
-
-/* caso de Favio */
-//v_st vt[] = { {2,3}, {5,4}, {10,9}, {99,5}, {100,1}, {110,2}, {111,9}, {200,9}, {201,9}};
-//v_st vr[] = { {2,9}, {5,2}, {10,5}, {99,9}, {100,1}, {110,3}, {111,4}, {200,6}, {201,7}};
-
-/* caso identico */
-//v_st vt[] = { {0,3}, {1,4}, {2,9}, {3,5}, {4,1}, {5,2}, {6,9}, {7,9}, {8,9}};
-//v_st vr[] = { {0,9}, {1,2}, {2,5}, {3,9}, {4,1}, {5,3}, {6,4}, {7,6}, {8,7}};
 
 v_st vt[Nc];
 v_st vr[Nc];
 
+/* base de datos */
+fing_st RFINGs[POS_N][Nc]; 
 char ERs[Nc][MAC_LEN];
-fing_st RFINGs[POS_N][Nc]; /* hay que guardar la MAC (17 letras) y la potencia (un int) en cada RFING */
 char GPSs[Nc][LAT_LONG_LEN];
+
+/* tfing: datos obtenidos por un movil (caso del apunte de Favio) */
+fing_st tfing[] = { 
+
+	{"38:6B:1C:27:7C:00", 62},
+	{"38:6B:1C:27:7C:06", 60},
+	{"38:6B:1C:27:7C:AA", 54},
+	{"38:6B:1C:27:7C:05", 43},
+	{"38:6B:1C:27:7C:AC", 40},
+	{"38:6B:1C:27:7C:AC", -1}
+	};
+
 
 void v_init(v_st *v)
 {
@@ -61,16 +62,6 @@ void v_init(v_st *v)
 		v[i].pos = Nc;
 	}
 }
-
-fing_st tfing[] = { 
-
-	{"38:6B:1C:27:7C:00", 62},
-	{"38:6B:1C:27:7C:06", 60},
-	{"38:6B:1C:27:7C:AA", 54},
-	{"38:6B:1C:27:7C:05", 43},
-	{"38:6B:1C:27:7C:AC", 40},
-	{"38:6B:1C:27:7C:AC", -1}
-	};
 
 /* fing st init */
 void f_init(fing_st *f)
