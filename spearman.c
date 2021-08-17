@@ -58,7 +58,7 @@ void bd_init(fing_st *f[])
 	int i;
 
 	for (i=0; i<POS_N; i++)
-		f_init(RFINGs[i]);
+		f_init(f[i]);
 
 }
 
@@ -86,25 +86,23 @@ void v_ordenar(fing_st *f, v_st *v)
 }
 
 
-int ERs_load(void)
+/* carga el listado de access points */
+int ERs_load(const char *fname, char ers[][MAC_LEN])
 {
 	int i, n;
 	char mac[MAC_LEN+1];
 	char l[LINE_LEN];
 	FILE *f;
 
-	f = fopen(ERs_FILE, "r");
+	//f = fopen(ERs_FILE, "r");
+	f = fopen(fname, "r");
 	i=0;
 	
 	while (fgets(l, sizeof(l), f)) {
-		memcpy(ERs[i], l, MAC_LEN);
+		memcpy(ers[i], l, MAC_LEN);
 		i++;
 	}
 	fclose(f);
-
-	/* Ordenamos cada entrada de forma decreciente */
- 	for (i=0; i<Nc; i++)
-                qsort (RFINGs[i], Nc, sizeof(fing_st), compare);
 
 	return n;
 }
@@ -135,7 +133,7 @@ void print_datos(void)
 }
 
 /* carga la base de datos (CDB) */
-int GPSs_ERs_load(void)
+int GPSs_ERs_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN])
 {
 	int i, j, n;
 	char mac[LINE_LEN];
@@ -146,25 +144,36 @@ int GPSs_ERs_load(void)
 
 	/* inicializa las estructuras de datos en -1 */
 	for (i=0; i<Nc; i++)
-		f_init(RFINGs[i]);
+		f_init(rfings[i]);
+		//f_init(RFINGs[i]);
 
-	f = fopen(GPSs_ERs_FILE, "r");
+	/* cargamos la CDB */
+	f = fopen(fname, "r");
+	//f = fopen(GPSs_ERs_FILE, "r");
 	i=-1; j=0; n-0;
 	while (fgets(l, sizeof(l), f)) {
 		if (strchr(l, ',') == NULL) {		/* es una MAC y potencia */
-			memcpy(RFINGs[i][j].mac, l, MAC_LEN);
+			memcpy(rfings[i][j].mac, l, MAC_LEN);
+			//memcpy(RFINGs[i][j].mac, l, MAC_LEN);
 			p = strchr(l, ' ');
-			RFINGs[i][j].rss = atoi(p);
+			rfings[i][j].rss = atoi(p);
+			//RFINGs[i][j].rss = atoi(p);
 			j++;
 		} else {				/* latitud y longitud */
 			i++;
 			j=0;
-			strncpy(GPSs[i], l, LAT_LONG_LEN);
+			strncpy(gps[i], l, LAT_LONG_LEN);
+			//strncpy(GPSs[i], l, LAT_LONG_LEN);
 		}
 	}
 	n = i;
 	fclose(f);
 	
+	/* Ordenamos cada entrada de forma decreciente */
+ 	for (i=0; i<Nc; i++)
+                qsort (rfings[i], Nc, sizeof(fing_st), compare);
+                //qsort (RFINGs[i], Nc, sizeof(fing_st), compare);
+
 	return n;
 }
 

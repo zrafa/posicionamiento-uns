@@ -29,15 +29,15 @@ typedef struct fing_st {
 	int rss;
 } fing_st;
 
-
 void v_init(v_st *v);
 void f_init(fing_st *f);
 void bd_init(fing_st *f[]);
 void v_ordenar(fing_st *f, v_st *v);
-int ERs_load(void);
+int ERs_load(const char *fname, char ers[][MAC_LEN]);
 int compare (const void * a, const void * b);
 void print_datos(void);
-int GPSs_ERs_load(void); 
+int GPSs_ERs_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN]);
+//int GPSs_ERs_load(void); 
 float pt_pr_calc(v_st *v);
 /* 
  * p_calc: calcula el Spearman Rank Correlation Coefficient (SRC)
