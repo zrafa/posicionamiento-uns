@@ -2,7 +2,7 @@ CC = gcc
 APP = distancia
 CFLAGS = -g
 LDFLAGS = -lm
-OBJETOS = distancia.o
+OBJETOS = spearman.o main.o
 
 # $@:Se sustituye por el nombre del objetivo de la presente regla.
 # $*:Se sustituye por la raíz de un nombre de fichero.
