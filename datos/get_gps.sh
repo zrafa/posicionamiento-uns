@@ -37,6 +37,6 @@ function initMap() {
 
 	cp /tmp/index.js web/
 
-	sleep 10
+	sleep 1
 done 
 
