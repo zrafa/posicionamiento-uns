@@ -19,6 +19,8 @@
 # define Nc     9       /* 30 ERs maximo en la matriz */
 # define POS_N  40      /* maxima cantidad de puntos. Ej: 5 puntos por cuadra, 4 cuadras */
 
+typedef enum { cdb, movil} tipo;
+
 typedef struct v_st {
 	int id;
 	int pos;
@@ -33,10 +35,11 @@ void v_init(v_st *v);
 void f_init(fing_st *f);
 void bd_init(fing_st *f[]);
 void v_ordenar(fing_st *f, v_st *v);
-int ERs_load(const char *fname, char ers[][MAC_LEN]);
+int ERs_load(const char *fname);
 int compare (const void * a, const void * b);
 void print_datos(void);
-int GPSs_ERs_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN]);
+int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN]);
+void data_load(const char *f, tipo n);
 //int GPSs_ERs_load(void); 
 float pt_pr_calc(v_st *v);
 /* 

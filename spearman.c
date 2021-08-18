@@ -25,8 +25,11 @@
  */
 
 /* base de datos */
-char GPSs[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
-fing_st RFINGs[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+char cdb_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
+fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+
+char movil_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
+fing_st movil_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* listado de estaciones de radio (access points) */
 char ERs[Nc][MAC_LEN];
@@ -87,7 +90,7 @@ void v_ordenar(fing_st *f, v_st *v)
 
 
 /* carga el listado de access points */
-int ERs_load(const char *fname, char ers[][MAC_LEN])
+int ERs_load(const char *fname)
 {
 	int i, n;
 	char mac[MAC_LEN+1];
@@ -99,7 +102,7 @@ int ERs_load(const char *fname, char ers[][MAC_LEN])
 	i=0;
 	
 	while (fgets(l, sizeof(l), f)) {
-		memcpy(ers[i], l, MAC_LEN);
+		memcpy(ERs[i], l, MAC_LEN);
 		i++;
 	}
 	fclose(f);
@@ -121,19 +124,19 @@ void print_datos(void)
 	int i,j;
 	char mac[LINE_LEN];
 	for (i=0; i<Nc; i++) {
-		printf("gps: %s\n", GPSs[i]);
+		printf("gps: %s\n", cdb_gps[i]);
 		for (j=0; j<Nc; j++) {
-			if (RFINGs[i][j].rss != 0) {
+			if (cdb_rfing[i][j].rss != 0) {
 				memcpy(mac, ERs[i], MAC_LEN);
 				mac[MAC_LEN] = '\0';
-				printf("\tmac: %s  -  rss: %i\n",RFINGs[i][j].mac, RFINGs[i][j].rss);
+				printf("\tmac: %s  -  rss: %i\n",cdb_rfing[i][j].mac, cdb_rfing[i][j].rss);
 			}
 		}
 	};
 }
 
 /* carga la base de datos (CDB) */
-int GPSs_ERs_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN])
+int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN])
 {
 	int i, j, n;
 	char mac[LINE_LEN];
@@ -175,6 +178,18 @@ int GPSs_ERs_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_L
                 //qsort (RFINGs[i], Nc, sizeof(fing_st), compare);
 
 	return n;
+}
+
+void data_load(const char *f, tipo n)
+{
+	if (n == cdb)
+		gps_firmas_load(f, cdb_rfing, cdb_gps);
+	else
+		gps_firmas_load(f, movil_rfing, movil_gps);
+		
+	
+
+
 }
 
 float pt_pr_calc(v_st *v) 
