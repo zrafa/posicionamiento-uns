@@ -19,7 +19,7 @@
 
 #include "spearman.h"
 
-/* datos :
+/* formato de los datos :
  *	  Latitud,Longitud. Ej: 3849.84448,06804.07505
  *        MAC (ID) y nivel. Ej: 38:6B:1C:27:7C:DA 60
  */
@@ -28,6 +28,7 @@
 char cdb_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
 fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
+/* datos del movil */
 char movil_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
 fing_st movil_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
@@ -97,7 +98,6 @@ int ERs_load(const char *fname)
 	char l[LINE_LEN];
 	FILE *f;
 
-	//f = fopen(ERs_FILE, "r");
 	f = fopen(fname, "r");
 	i=0;
 	
@@ -135,7 +135,7 @@ void print_datos(void)
 	};
 }
 
-/* carga la base de datos (CDB) */
+/* carga la base de datos (CDB) o datos del movil */
 int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN])
 {
 	int i, j, n;
@@ -148,25 +148,20 @@ int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG
 	/* inicializa las estructuras de datos en -1 */
 	for (i=0; i<Nc; i++)
 		f_init(rfings[i]);
-		//f_init(RFINGs[i]);
 
 	/* cargamos la CDB */
 	f = fopen(fname, "r");
-	//f = fopen(GPSs_ERs_FILE, "r");
 	i=-1; j=0; n-0;
 	while (fgets(l, sizeof(l), f)) {
 		if (strchr(l, ',') == NULL) {		/* es una MAC y potencia */
 			memcpy(rfings[i][j].mac, l, MAC_LEN);
-			//memcpy(RFINGs[i][j].mac, l, MAC_LEN);
 			p = strchr(l, ' ');
 			rfings[i][j].rss = atoi(p);
-			//RFINGs[i][j].rss = atoi(p);
 			j++;
 		} else {				/* latitud y longitud */
 			i++;
 			j=0;
 			strncpy(gps[i], l, LAT_LONG_LEN);
-			//strncpy(GPSs[i], l, LAT_LONG_LEN);
 		}
 	}
 	n = i;
@@ -175,22 +170,21 @@ int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG
 	/* Ordenamos cada entrada de forma decreciente */
  	for (i=0; i<Nc; i++)
                 qsort (rfings[i], Nc, sizeof(fing_st), compare);
-                //qsort (RFINGs[i], Nc, sizeof(fing_st), compare);
 
 	return n;
 }
 
 void data_load(const char *f, tipo n)
 {
-	if (n == cdb)
+	if (n == cdb) {
+		/* carga la BD cdb */
 		gps_firmas_load(f, cdb_rfing, cdb_gps);
-	else
+	} else {
+		/* carga datos del movil */
 		gps_firmas_load(f, movil_rfing, movil_gps);
-		
-	
-
-
+	}
 }
+
 
 float pt_pr_calc(v_st *v) 
 {

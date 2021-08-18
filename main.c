@@ -18,7 +18,11 @@
 
 #include "spearman.h"
 
-/* base de datos */
+/* formato de los datos :
+ *        Latitud,Longitud. Ej: 3849.84448,06804.07505
+ *        MAC (ID) y nivel. Ej: 38:6B:1C:27:7C:DA 60
+ */
+
 /* base de datos */
 extern char cdb_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
 extern fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
@@ -27,9 +31,9 @@ extern fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un lista
 /* listado de estaciones de radio (access points) */
 extern char ERs[Nc][MAC_LEN];
 
-
-char mov_l[Nc][LAT_LONG_LEN]; /* listado de localizaciones (del movil) */
-fing_st mov_f[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+/* datos del movil */
+extern char mov_l[Nc][LAT_LONG_LEN]; /* listado de localizaciones (del movil) */
+extern fing_st mov_f[POS_N][Nc];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* vectores para el calculo de spearman */
 v_st vt[Nc];
@@ -111,18 +115,13 @@ void main(void)
 {
 	int i;
 
-	//GPSs_ERs_load();
 	data_load(f_cdb, cdb);
 	//data_load(f_movil, movil);
-	//GPSs_ERs_load(f_cdb, RFINGs, GPSs);
-	//ERs_load(f_er, ERs);
 	ERs_load(f_er);
 	print_datos();
 	
 	v_ordenar(cdb_rfing[2], vr);
-	//v_ordenar(RFINGs[2], vr);
 	v_ordenar(tfing, vt);
-	//v_ordenar(RFINGs[2], vt);
 
 	for (i=0; i<Nc; i++) {
 		printf("vt %i id:%i pos:%i\n", i, vt[i].id, vt[i].pos); 

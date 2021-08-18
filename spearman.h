@@ -40,10 +40,10 @@ int compare (const void * a, const void * b);
 void print_datos(void);
 int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN]);
 void data_load(const char *f, tipo n);
-//int GPSs_ERs_load(void); 
 float pt_pr_calc(v_st *v);
 /* 
  * p_calc: calcula el Spearman Rank Correlation Coefficient (SRC)
  */
 float p_calc(v_st *vt, v_st *vr);
+
 #endif /* SPEARMAN_H */
