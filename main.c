@@ -32,8 +32,8 @@ extern fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un lista
 extern char ERs[Nc][MAC_LEN];
 
 /* datos del movil */
-extern char mov_l[Nc][LAT_LONG_LEN]; /* listado de localizaciones (del movil) */
-extern fing_st mov_f[POS_N][Nc];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
+extern char movil_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (del movil) */
+extern fing_st movil_rfing[POS_N][Nc];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* vectores para el calculo de spearman */
 v_st vt[Nc];
@@ -60,6 +60,7 @@ typedef struct distancia_t {
 	} distancia_t;
 
 distancia_t d[Nc];
+distancia_t loc[Nc]; /* localizacion segun SRC de cada posicion del movil */
 
 int compare_d (const void * a, const void * b)
 {
@@ -68,7 +69,7 @@ int compare_d (const void * a, const void * b)
   return ( data_1->dis > data_2->dis );
 }
 
-void d_init(void) 
+void d_init(distancia_t d[Nc]) 
 {
 	int i;
 
@@ -111,18 +112,73 @@ float get_y(const char *s)
 #define K 3 
 #define L 3 
 
-void main(void)
+void maf()
+{
+	int i,j;
+	float p;
+
+	/* KNN */
+	float x = 0;
+	float y = 0;
+	p = 0;
+	for (i=1; i<(Nc-1); i++) {
+		if (loc[i+1].dis == 3)
+			break;
+
+		x=0; y=0;
+		for (j=-1; j<=1; j++) {
+			x = x + get_x( cdb_gps[ loc[i+j].n ] );
+			y = y + get_y( cdb_gps[ loc[i+j].n ] );
+		}
+		x=x/K; y=y/K;
+
+		printf("movil:%i - cdb gps x,y: %f,%f - maf[%i] x,y: %f,%f\n", 
+			i,
+			get_x( cdb_gps[ loc[i].n ] ),
+			get_y( cdb_gps[ loc[i].n ] ),
+			K, x, y);
+	}
+
+}
+
+
+void knn(int movil_n)
 {
 	int i;
+	float p;
+
+	/* KNN */
+	float x = 0;
+	float y = 0;
+	p = 0;
+	for (i=0; i<K; i++) {
+		x = x + get_x( cdb_gps[ d[i].n ] );
+		y = y + get_y( cdb_gps[ d[i].n ] );
+	}
+	x=x/K; y=y/K;
+
+	printf("movil:%i - cdb gps x,y: %f,%f - knn[%i] x,y: %f,%f\n", 
+		movil_n,
+		get_x( cdb_gps[ d[0].n ] ),
+		get_y( cdb_gps[ d[0].n ] ),
+		K, x, y);
+
+}
+
+
+void main(void)
+{
+	int i,j;
 
 	data_load(f_cdb, cdb);
-	//data_load(f_movil, movil);
+	data_load(f_movil, movil);
 	ERs_load(f_er);
 	print_datos();
 	
 	v_ordenar(cdb_rfing[2], vr);
 	v_ordenar(tfing, vt);
 
+	/*
 	for (i=0; i<Nc; i++) {
 		printf("vt %i id:%i pos:%i\n", i, vt[i].id, vt[i].pos); 
 	}
@@ -130,9 +186,11 @@ void main(void)
 	for (i=0; i<Nc; i++) {
 		printf("vr %i id:%i pos:%i\n", i, vr[i].id, vr[i].pos); 
 	}
+	*/
 
 	float p;
 
+/*
 	d_init();
 
 	for (i=0; i<Nc; i++) {
@@ -149,25 +207,39 @@ void main(void)
 	for (i=0; i<Nc; i++) {
 		printf("i:%i - dis:%f\n", d[i].n, d[i].dis);
 	}
+*/
 
-	/* KNN */
-	float x = 0;
-	float y = 0;
-	p = 0;
-	for (i=0; i<K; i++) {
-		x = x + get_x( cdb_gps[ d[i].n ] );
-		y = y + get_y( cdb_gps[ d[i].n ] );
-	}
-	x=x/K; y=y/K;
+	d_init(loc);
+	for (j=0; j<Nc; j++) {
+		if (movil_rfing[j][0].rss == -1)
+			break;
 
-	printf("gps x,y: %f,%f - knn[%i] x,y: %f,%f\n", 
-		get_x( cdb_gps[ d[0].n ] ),
-		get_y( cdb_gps[ d[0].n ] ),
-		K, x, y);
+		d_init(d);
 
+		for (i=0; i<Nc; i++) {
+			if (cdb_rfing[i][0].rss == -1)
+				break;
+			v_ordenar(cdb_rfing[i], vr);
+			v_ordenar(movil_rfing[j], vt);
+			p = p_calc(vt, vr);
+			d[i].dis = (float) 1-p;
+			d[i].n = i;
+		}
+		qsort (d, Nc, sizeof(distancia_t), compare_d);
+		loc[j].dis = d[0].dis;
+		loc[j].n = d[0].n;
+		knn(j);
+	};
+	
+	printf("\n");
+
+	maf();
+
+/*
 	p = p_calc(vt, vr);
 	printf("c: %f\n", p);
 	printf("d=1-p = %f\n", (float)1-p);
+*/
 
 	
 }

@@ -214,8 +214,8 @@ float p_calc(v_st *vt, v_st *vr)
 	pt = pt_pr_calc(vt);
 	pr = pt_pr_calc(vr);
 
-	printf("pt= %f\n", pt);
-	printf("pr= %f\n", pr);
+	// printf("pt= %f\n", pt);
+	// printf("pr= %f\n", pr);
 
 	t1=0; t2=0; t3=0; p=0;
 
