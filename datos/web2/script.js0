@@ -1,0 +1,29 @@
+
+/*
+ * declare map as a global variable
+ */
+var map;
+var myMarkers = [];
+/*
+ * create a initialize function
+ */
+function initialize() {
+    var myCenter=new google.maps.LatLng(-38.8281786,-68.0700259);
+    var mapOptions = {
+        center: myCenter,
+        zoom: 19,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+    };
+    
+    map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
+    SetMarkers();
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+function SetMarkers() {
+    var geocoder = new google.maps.Geocoder();
+    var myData = [];
+    
+    // here you can change this JSON for a call to your database 
+    myData = [

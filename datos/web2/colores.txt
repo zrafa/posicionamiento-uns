@@ -1,0 +1,4 @@
+blue knn
+red maf
+green spearman (gps)
+black movil (gps)
