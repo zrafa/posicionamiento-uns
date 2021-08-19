@@ -90,6 +90,7 @@ float get_x(const char *s)
 	strncpy(temp, s+2, 8);
 	temp[8] = '\0';
 	x = x + (atof(temp) / 60);
+	x*=-1;
 	
 	return x;
 }
@@ -105,11 +106,13 @@ float get_y(const char *s)
 	strncpy(temp, s+14, 8);
 	temp[8] = '\0';
 	y = y + (atof(temp) / 60);
+	y*=-1;
 	
 	return y;
 }
 
-#define K 3 
+int K;
+//#define K 3 
 #define L 3 
 
 void maf()
@@ -137,10 +140,13 @@ void maf()
 			get_x( cdb_gps[ loc[i].n ] ),
 			get_y( cdb_gps[ loc[i].n ] ),
 			K, x, y);
-		printf("web movil%i: {lat: \"%f\" , lng: \"%f\", name: \"maf\",  address: \"maf\"}, \n", i, x, y);
-		printf("web movil%i: {lat: \"%f\" , lng: \"%f\", name: \"cdb\",  address: \"cdb\"}, \n", i,
+		printf("web movil%i: {lat: %f , lng: %f, name: \"maf\",  address: \"maf\"}, \n", i, x, y);
+		printf("web movil%i: {lat: %f , lng: %f, name: \"cdb\",  address: \"cdb\"}, \n", i,
 			get_x( cdb_gps[ loc[i].n ] ),
 			get_y( cdb_gps[ loc[i].n ] ) );
+		printf("web movil%i: {lat: %f , lng: %f, name: \"cdb\",  address: \"cdb\"}, \n", i,
+			get_x( movil_gps[i]),
+			get_y( movil_gps[i]) );
 	}
 
 }
@@ -166,16 +172,22 @@ void knn(int movil_n)
 		get_x( cdb_gps[ d[0].n ] ),
 		get_y( cdb_gps[ d[0].n ] ),
 		K, x, y);
-	printf("web movil%i: {lat: \"%f\" , lng: \"%f\", name: \"knn\",  address: \"knn\"}, \n", movil_n, x, y);
+	printf("web movil%i: {lat: %f , lng: %f, name: \"knn\",  address: \"knn\"}, \n", movil_n, x, y);
 
 }
 
 /* moving average filter (MAF) */
-void main(void)
+void main(int argc, char *argv[])
 {
 	int i,j;
 	float p;
 
+	if (argc < 2) {
+		printf("Error. Ejecutar con:\n\t %s K  # donde K es un entero para el calculo de knn\n\n", argv[0]);
+		exit(1);
+	}
+	K = atoi(argv[1]);
+	
 	data_load(f_cdb, cdb);
 	data_load(f_movil, movil);
 	ERs_load(f_er);
