@@ -1,7 +1,7 @@
 # posicionamiento-uns
 Curso de posicionamiento y seguimiento UNS - Favio Masson
 
-Alumnos: Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
+Alumno: Rafael Ignacio Zurita <rafa@fi.uncoma.edu.ar>
 
 Este repositorio contiene todos los elementos elaborados para el trabajo final del curso.
 Los cuales consisten de:
