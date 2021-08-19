@@ -198,21 +198,29 @@ void main(int argc, char *argv[])
 
 
 	d_init(loc);
+	/* recorremos las firmas del movil y calculamos las distancias a
+	 * cada punto de la CDB
+	 */
 	for (j=0; j<Nc; j++) {
 		if (movil_rfing[j][0].rss == -1)
 			break;
 
 		d_init(d);
-
+		/* para cada punto en la CDB calculamos el coeficiente SRC con
+		 * respecto a la medida particular j del movil
+		 */
 		for (i=0; i<Nc; i++) {
 			if (cdb_rfing[i][0].rss == -1)
 				break;
+			/* ordenacion: apunte de Favio (1.113), (1.114) y (1.115)*/
 			v_ordenar(cdb_rfing[i], vr);
 			v_ordenar(movil_rfing[j], vt);
+			/* SRC: apunte de Favio (1.116) */
 			p = p_calc(vt, vr);
 			d[i].dis = (float) 1-p;
 			d[i].n = i;
 		}
+		/* ordenamos en forma ascendente para usarlo en KNN */
 		qsort (d, Nc, sizeof(distancia_t), compare_d);
 		loc[j].dis = d[0].dis;
 		loc[j].n = d[0].n;
