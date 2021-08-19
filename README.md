@@ -22,7 +22,7 @@ Filtrado de datos crudos
 Procesamiento 
 -------------
 
-- Se realiza en un programa en C la : carga, ordenacion, preparación, spearman, distancia, knn y maf.
+- Se desarrolló un en C que realiza el procesamiento: carga, ordenacion, preparación, spearman, distancia, knn y maf.
 
 Visualización (presentación)
 ----------------------------
