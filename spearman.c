@@ -26,11 +26,11 @@
 
 /* base de datos */
 char cdb_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
-fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+fing_st cdb_rfing[Nc][POS_N];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* datos del movil */
 char movil_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
-fing_st movil_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+fing_st movil_rfing[Nc][POS_N];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* listado de estaciones de radio (access points) */
 char ERs[Nc][MAC_LEN];
@@ -51,7 +51,8 @@ void f_init(fing_st *f)
 {
 	int i;
 
-	for (i=0; i<Nc; i++)
+	//for (i=0; i<Nc; i++)
+	for (i=0; i<POS_N; i++)
 		f[i].rss = -1;
 
 }
@@ -72,7 +73,8 @@ void v_ordenar(fing_st *f, v_st *v)
 	int i, j;
 
 	v_init(v);
-	for (i=0; i<Nc; i++) {
+	//for (i=0; i<Nc; i++) {
+	for (i=0; i<POS_N; i++) {
 		if (f[i].rss == -1)
 			break;
 
@@ -136,7 +138,7 @@ void print_datos(void)
 }
 
 /* carga la base de datos (CDB) o datos del movil */
-int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN])
+int gps_firmas_load(const char *fname, fing_st rfings[][POS_N], char gps[][LAT_LONG_LEN])
 {
 	int i, j, n;
 	char mac[LINE_LEN];
@@ -169,7 +171,8 @@ int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG
 	
 	/* Ordenamos cada entrada de forma decreciente */
  	for (i=0; i<Nc; i++)
-                qsort (rfings[i], Nc, sizeof(fing_st), compare);
+                qsort (rfings[i], POS_N, sizeof(fing_st), compare);
+                //qsort (rfings[i], Nc, sizeof(fing_st), compare);
 
 	return n;
 }

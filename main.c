@@ -25,7 +25,8 @@
 
 /* base de datos */
 extern char cdb_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
-extern fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+//extern fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
+extern fing_st cdb_rfing[Nc][POS_N];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 
 /* listado de estaciones de radio (access points) */
@@ -33,7 +34,8 @@ extern char ERs[Nc][MAC_LEN];
 
 /* datos del movil */
 extern char movil_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (del movil) */
-extern fing_st movil_rfing[POS_N][Nc];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
+extern fing_st movil_rfing[Nc][POS_N];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
+//extern fing_st movil_rfing[POS_N][Nc];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* vectores para el calculo de spearman */
 v_st vt[Nc];

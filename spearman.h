@@ -11,13 +11,14 @@
 #ifndef SPEARMAN_H
 #define SPEARMAN_H
 
-# define ERs_FILE "ERs.txt"
-# define GPSs_ERs_FILE "gps-er.txt"
-# define MAC_LEN        17      /* 17 letras tiene una MAC de ER */
-# define LAT_LONG_LEN   80      /* len de la cadena latitud,longitud */
-# define LINE_LEN       80      /* 17 letras tiene una MAC de ER */
-# define Nc     9       /* 30 ERs maximo en la matriz */
-# define POS_N  40      /* maxima cantidad de puntos. Ej: 5 puntos por cuadra, 4 cuadras */
+#define ERs_FILE "ERs.txt"
+#define GPSs_ERs_FILE "gps-er.txt"
+#define MAC_LEN        17      /* 17 letras tiene una MAC de ER */
+#define LAT_LONG_LEN   80      /* len de la cadena latitud,longitud */
+#define LINE_LEN       80      /* 17 letras tiene una MAC de ER */
+// # define Nc     9       /* 30 ERs maximo en la matriz */
+#define Nc     111       /* 30 ERs maximo en la matriz */
+#define POS_N  40      /* maxima cantidad de puntos. Ej: 5 puntos por cuadra, 4 cuadras */
 
 typedef enum { cdb, movil} tipo;
 
@@ -38,7 +39,7 @@ void v_ordenar(fing_st *f, v_st *v);
 int ERs_load(const char *fname);
 int compare (const void * a, const void * b);
 void print_datos(void);
-int gps_firmas_load(const char *fname, fing_st rfings[][Nc], char gps[][LAT_LONG_LEN]);
+int gps_firmas_load(const char *fname, fing_st rfings[][POS_N], char gps[][LAT_LONG_LEN]);
 void data_load(const char *f, tipo n);
 float pt_pr_calc(v_st *v);
 /* 
