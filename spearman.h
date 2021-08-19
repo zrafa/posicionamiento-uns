@@ -16,8 +16,7 @@
 #define MAC_LEN        17      /* 17 letras tiene una MAC de ER */
 #define LAT_LONG_LEN   80      /* len de la cadena latitud,longitud */
 #define LINE_LEN       80      /* 17 letras tiene una MAC de ER */
-// # define Nc     9       /* 30 ERs maximo en la matriz */
-#define Nc     111       /* 30 ERs maximo en la matriz */
+#define Nc     111       /* 111 ERs maximo en la matriz */
 #define POS_N  40      /* maxima cantidad de puntos. Ej: 5 puntos por cuadra, 4 cuadras */
 
 typedef enum { cdb, movil} tipo;

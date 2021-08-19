@@ -51,7 +51,6 @@ void f_init(fing_st *f)
 {
 	int i;
 
-	//for (i=0; i<Nc; i++)
 	for (i=0; i<POS_N; i++)
 		f[i].rss = -1;
 
@@ -73,7 +72,6 @@ void v_ordenar(fing_st *f, v_st *v)
 	int i, j;
 
 	v_init(v);
-	//for (i=0; i<Nc; i++) {
 	for (i=0; i<POS_N; i++) {
 		if (f[i].rss == -1)
 			break;
@@ -172,7 +170,6 @@ int gps_firmas_load(const char *fname, fing_st rfings[][POS_N], char gps[][LAT_L
 	/* Ordenamos cada entrada de forma decreciente */
  	for (i=0; i<Nc; i++)
                 qsort (rfings[i], POS_N, sizeof(fing_st), compare);
-                //qsort (rfings[i], Nc, sizeof(fing_st), compare);
 
 	return n;
 }

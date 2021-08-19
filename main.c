@@ -25,7 +25,6 @@
 
 /* base de datos */
 extern char cdb_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (puntos gps) */
-//extern fing_st cdb_rfing[POS_N][Nc];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 extern fing_st cdb_rfing[Nc][POS_N];   /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 
@@ -35,7 +34,6 @@ extern char ERs[Nc][MAC_LEN];
 /* datos del movil */
 extern char movil_gps[Nc][LAT_LONG_LEN]; /* listado de localizaciones (del movil) */
 extern fing_st movil_rfing[Nc][POS_N];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
-//extern fing_st movil_rfing[POS_N][Nc];     /* firmas: por cada loc. tenemos un listado de AP y nivel */
 
 /* vectores para el calculo de spearman */
 v_st vt[Nc];
@@ -119,7 +117,7 @@ void maf()
 	int i,j;
 	float p;
 
-	/* KNN */
+	/* MAF */
 	float x = 0;
 	float y = 0;
 	p = 0;
@@ -139,11 +137,15 @@ void maf()
 			get_x( cdb_gps[ loc[i].n ] ),
 			get_y( cdb_gps[ loc[i].n ] ),
 			K, x, y);
+		printf("web movil%i: {lat: \"%f\" , lng: \"%f\", name: \"maf\",  address: \"maf\"}, \n", i, x, y);
+		printf("web movil%i: {lat: \"%f\" , lng: \"%f\", name: \"cdb\",  address: \"cdb\"}, \n", i,
+			get_x( cdb_gps[ loc[i].n ] ),
+			get_y( cdb_gps[ loc[i].n ] ) );
 	}
 
 }
 
-
+/* k-vecinos mas cercanos (KNN) */
 void knn(int movil_n)
 {
 	int i;
@@ -164,13 +166,15 @@ void knn(int movil_n)
 		get_x( cdb_gps[ d[0].n ] ),
 		get_y( cdb_gps[ d[0].n ] ),
 		K, x, y);
+	printf("web movil%i: {lat: \"%f\" , lng: \"%f\", name: \"knn\",  address: \"knn\"}, \n", movil_n, x, y);
 
 }
 
-
+/* moving average filter (MAF) */
 void main(void)
 {
 	int i,j;
+	float p;
 
 	data_load(f_cdb, cdb);
 	data_load(f_movil, movil);
@@ -180,36 +184,6 @@ void main(void)
 	v_ordenar(cdb_rfing[2], vr);
 	v_ordenar(tfing, vt);
 
-	/*
-	for (i=0; i<Nc; i++) {
-		printf("vt %i id:%i pos:%i\n", i, vt[i].id, vt[i].pos); 
-	}
-
-	for (i=0; i<Nc; i++) {
-		printf("vr %i id:%i pos:%i\n", i, vr[i].id, vr[i].pos); 
-	}
-	*/
-
-	float p;
-
-/*
-	d_init();
-
-	for (i=0; i<Nc; i++) {
-		if (cdb_rfing[i][0].rss == -1)
-			break;
-		v_ordenar(cdb_rfing[i], vr);
-		v_ordenar(tfing, vt);
-		p = p_calc(vt, vr);
-		d[i].dis = (float) 1-p;
-		d[i].n = i;
-	}
-	qsort (d, Nc, sizeof(distancia_t), compare_d);
-
-	for (i=0; i<Nc; i++) {
-		printf("i:%i - dis:%f\n", d[i].n, d[i].dis);
-	}
-*/
 
 	d_init(loc);
 	for (j=0; j<Nc; j++) {
@@ -237,11 +211,4 @@ void main(void)
 
 	maf();
 
-/*
-	p = p_calc(vt, vr);
-	printf("c: %f\n", p);
-	printf("d=1-p = %f\n", (float)1-p);
-*/
-
-	
 }
